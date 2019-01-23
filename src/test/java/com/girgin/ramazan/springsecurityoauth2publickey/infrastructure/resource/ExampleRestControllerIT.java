@@ -76,6 +76,21 @@ public class ExampleRestControllerIT {
     }
 
     @Test
+    public void should_return_invalid_token_response_when_token_is_expired() throws Exception {
+        //given
+        String accessToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NDgyNjAwNTcsInVzZXJfbmFtZSI6InVzZXJhIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DIiwiUk9MRV9BIiwiUk9MRV9CIl0sImp0aSI6ImM3NTg5ZDJiLTkyYzAtNGVkOC04MjIwLTQ2ZGE1ZThlNmZmMiIsImNsaWVudF9pZCI6IndlYi1hcHAiLCJzY29wZSI6WyJyZWFkIl19.R2buByck2v3mEKjMJ82W5xZGV_g_nI4ojQQASgMXcewg85q3ef3dNJr7XsOtg7CRj6bs8HJSsIzjeVCJW5k4aIUnS9tht8UPvf9W9YbpEwr0y8Vn9wlXyWdy_UHyzZXpcXMKhgN9_7vvxqjH5m7k9aSzjx2R0WsxZyT9wuHmdgIofcOhT6rXXSZfa4XEatbn4hev5YhMah53vthT1f4XfiGKq96ZhYlDFkFx4aHjZ3p1SZvU8lcvTpHbM8mYmMHAIKu1RIhY6QDGySveSpX74rUwyWgF3t40PjRepcNQ6TRRk2lBCIh7NAyfXDr76XRxvsL1iM2qacs4sgQz0baV1w";
+
+        //when
+        mockMvc.perform(get("/hello-role-a")
+                .header("Authorization", "Bearer " + accessToken))
+                //then
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("invalid_token")))
+                .andExpect(jsonPath("$.error_description", is("Access token expired: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NDgyNjAwNTcsInVzZXJfbmFtZSI6InVzZXJhIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DIiwiUk9MRV9BIiwiUk9MRV9CIl0sImp0aSI6ImM3NTg5ZDJiLTkyYzAtNGVkOC04MjIwLTQ2ZGE1ZThlNmZmMiIsImNsaWVudF9pZCI6IndlYi1hcHAiLCJzY29wZSI6WyJyZWFkIl19.R2buByck2v3mEKjMJ82W5xZGV_g_nI4ojQQASgMXcewg85q3ef3dNJr7XsOtg7CRj6bs8HJSsIzjeVCJW5k4aIUnS9tht8UPvf9W9YbpEwr0y8Vn9wlXyWdy_UHyzZXpcXMKhgN9_7vvxqjH5m7k9aSzjx2R0WsxZyT9wuHmdgIofcOhT6rXXSZfa4XEatbn4hev5YhMah53vthT1f4XfiGKq96ZhYlDFkFx4aHjZ3p1SZvU8lcvTpHbM8mYmMHAIKu1RIhY6QDGySveSpX74rUwyWgF3t40PjRepcNQ6TRRk2lBCIh7NAyfXDr76XRxvsL1iM2qacs4sgQz0baV1w")));
+    }
+
+    @Test
     public void should_get_non_secure_hello_without_authentication() throws Exception {
         //given-when
         mockMvc.perform(get("/non-secure-hello")
